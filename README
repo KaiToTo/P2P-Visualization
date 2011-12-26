@@ -1,1 +1,13 @@
-Hello,World!
+// P2P visualization program
+// Sasaki Kai
+// 2011.12.26
+// mail : lewuathe_626@star.ocn.ne.jp
+// MaxOSX 10.6.8
+--------------------------------------------------
+
+
+./div Test_SwarmsOnAS.txt
+This is divide all Swarm data.You should do it first.
+
+./vis Swarm(n)
+n is any number. For example on Test_SwarmsOnAS.txt,it is about 1 ~ 4600
