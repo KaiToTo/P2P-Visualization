@@ -1,0 +1,14 @@
+#Makefile
+
+all:vis div
+.PHONY:all
+
+vis:main.cpp stdafx.cpp
+	g++ main.cpp stdafx.cpp -o vis -framework OpenGL -framework GLUT -I/opt/local/include -L/opt/local/lib -lboost_regex `gsl-config --cflags --libs`
+
+div:divide.cpp
+	g++ divide.cpp -o div
+
+.PHONY:clean
+clean:
+	rm vis div 
