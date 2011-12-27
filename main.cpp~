@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <GLUT/glut.h>
 #include <boost/regex.hpp>
-#include <boost/foreach.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graph_utility.hpp>
 #include <boost/graph/graph_traits.hpp>
@@ -603,16 +602,9 @@ void displayVertex(vector<Vec2> cor){
     else{
       glColor3d(1.0,0.0,1.0);  //in case this is AS, color is pink
     }
-	double vx,vy;
-	if(strategy == 1){
-	  double* scaled = metric::scale(cor.at(i));
-	  vx = scaled[0];
-	  vy = scaled[1];
-	}
-	else{
-	  vx = cor.at(i).first;
-	  vy = cor.at(i).second;
-	}
+	
+    double vx = cor.at(i).first;
+    double vy = cor.at(i).second;
     circle(RAD,vx,vy);
     const char* str = (*ite).second.c_str();
     glColor3d(1.0,0.0,0.0);
@@ -640,16 +632,10 @@ void displayEdge(vector<Vec2> cor){
   for(unsigned int i = 0 ; i < cor.size() ; i++){
     for(unsigned int j = 0 ; j < cor.size() ; j++){
       if(gsl_matrix_get(adj,i,j) != 0){
-		glBegin(GL_LINES);
-		if(strategy == 1){
-		  glVertex2dv(metric::scale(cor.at(i)));
-		  glVertex2dv(metric::scale(cor.at(j)));
-		}
-		else{
-		  glVertex2d(cor.at(i).first,cor.at(i).second);
-		  glVertex2d(cor.at(j).first,cor.at(j).second);
-		}
-		glEnd();
+	glBegin(GL_LINES);
+	glVertex2d(cor.at(i).first,cor.at(i).second);
+	glVertex2d(cor.at(j).first,cor.at(j).second);
+	glEnd();
       }
     }
   }
