@@ -459,6 +459,10 @@ void drawString(const char *str,double x, double y,int size){
 //returning the course
 vector<int> course(int s,int t){
   vector<int> cour;
+  if(s < 0 || t < 0){
+	cour.push_back(-1);
+	return cour;
+  }
   map<int,string>::iterator iv_ite_s = iv.find(s);
   map<int,string>::iterator iv_ite_t = iv.find(t);
   map<string,int>::iterator vi_ite;
@@ -474,7 +478,6 @@ vector<int> course(int s,int t){
     cour.push_back((*vi_ite).second);
     start = edge_result[0].second;
   }
-  cout << cour.size() << endl;
   return cour;
 }
 
@@ -589,10 +592,8 @@ void displayVertex(vector<Vec2> cor){
     map<string,int>::iterator deg_ite;
     if((*is_ite).second){
       //if clicked, color is yellow
-      if(strategy == 0 && is_course(i,cour)){ 
-		glColor3d(1.0,1.0,0.0);
-      }
-      else if(strategy == 2 && is_course(i,cour)){
+      if((i == Cd.start_id || i == Cd.target_id || i == Circle_Cd.start_id || i == Circle_Cd.target_id)
+		 && (strategy == 0 || strategy == 2)){ 
 		glColor3d(1.0,1.0,0.0);
       }
       else{
@@ -623,6 +624,7 @@ void displayVertex(vector<Vec2> cor){
 //drawing edges(spring,circle)
 void displayEdge(vector<Vec2> cor,vector<int> adj[],int size){
   glColor3d(0.5,0.5,0.5);
+  vector<int> route;
   for(int i = 0 ; i < size ; i++){
     int start = i;
     for(unsigned int j = 0 ; j < adj[i].size() ; j++){
@@ -633,7 +635,24 @@ void displayEdge(vector<Vec2> cor,vector<int> adj[],int size){
       glEnd();
     }
   }
+  if(strategy == 0){
+	route = course(Cd.start_id,Cd.target_id);
+  }else if(strategy == 2){
+	route = course(Circle_Cd.start_id,Circle_Cd.target_id);
+  }
+  if(route.at(0) >= 0){ //if the route is not void
+	for(unsigned int i = 0 ; i < route.size()-1 ; i++){
+	  int start = route.at(i);
+	  int target = route.at(i+1);
+	  glColor3d(1.0,1.0,0.0);
+	  glBegin(GL_LINES);
+	  glVertex2d(cor.at(start).first,cor.at(start).second);
+	  glVertex2d(cor.at(target).first,cor.at(target).second);
+	  glEnd();
+	}
+  }
 }
+
 //drawing edges(spectral,mds)
 void displayEdge(vector<Vec2> cor){
   glColor3d(0.5,0.5,0.5);
@@ -770,29 +789,33 @@ void mouse(int button,int state,int x,int y){
       }
     }
     else if(click_mode == 1){  //in case that click_mode is root search mode
-      bool update = false;
       if(state == GLUT_DOWN){
-	for(unsigned int i = 0 ; i < Cd.coord.size() ; i++){
-	  cor = regCoord(x,y);
-	  if(is_pushed(i,cor.first,cor.second)){
-	    update = true;
-	    if(strategy == 0){
-	      if(Cd.start_id < 0){Cd.start_id = i;}
-	      else if(Cd.start_id >= 0){Cd.target_id = i;}
-	      else if(Cd.start_id >= 0 && Cd.target_id >= 0){Cd.start_id = Cd.target_id = -1;}
-	    }
-	    else if(strategy == 2){
-	      if(Circle_Cd.start_id < 0){Circle_Cd.start_id = i;}
-	      else if(Circle_Cd.start_id >= 0){Circle_Cd.target_id = i;}
-	      else if(Circle_Cd.start_id >= 0 && Circle_Cd.target_id >= 0){Circle_Cd.start_id = Circle_Cd.target_id = -1;}
-	    }
-	    break;
-	  }
-	}
-	if(!update){
-	  Cd.start_id = Cd.target_id = -1;
-	  Circle_Cd.start_id = Circle_Cd.target_id = -1;
-	}
+		bool update = false;
+		for(unsigned int i = 0 ; i < Cd.coord.size() ; i++){
+		  cor = regCoord(x,y);
+		  if(is_pushed(i,cor.first,cor.second)){
+			map<int,string>::iterator ite = iv.find(i);
+			map<string,bool>::iterator is_ite = isPeer.find((*ite).second);
+			if((*is_ite).second){
+			  update = true;
+			}
+			if(strategy == 0){
+			  if(Cd.start_id < 0){Cd.start_id = i;}  //the time that start point was not pushed yet
+			  else if(Cd.start_id >= 0){Cd.target_id = i;}  //the time start point has already been pushed 
+			  else if(Cd.start_id >= 0 && Cd.target_id >= 0){Cd.start_id = Cd.target_id = -1;}  //both point was pushed
+			}
+			else if(strategy == 2){
+			  if(Circle_Cd.start_id < 0){Circle_Cd.start_id = i;}
+			  else if(Circle_Cd.start_id >= 0){Circle_Cd.target_id = i;}
+			  else if(Circle_Cd.start_id >= 0 && Circle_Cd.target_id >= 0){Circle_Cd.start_id = Circle_Cd.target_id = -1;}
+			}
+			break;
+		  }
+		}
+		if(!update){  //there no point that was pushed
+		  Cd.start_id = Cd.target_id = -1;
+		  Circle_Cd.start_id = Circle_Cd.target_id = -1;
+		}
       }
     }
   }
@@ -832,11 +855,9 @@ void keyboard(unsigned char key, int x,int y){
   case 'm':
     click_mode = 0;
     break;
-		  /* it has not been useful yet. 
   case 'n': 
     click_mode = 1;
     break;
-		   */
   case '0':
     strategy = 0;
     glutIdleFunc(idle);
