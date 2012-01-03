@@ -46,7 +46,7 @@ VertexToInt vi;
 IntToVertex iv;
 VertexToDegree deg;  //各頂点のdegreeを格納するマップ
 vector<gEdges> glines;//辺を格納(表示用)
-map<pair<string,string>,string > way;  //
+map<pair<string,string>,string > way;  //it has route 
 
 
 
@@ -57,6 +57,7 @@ map<pair<string,string>,string > way;  //
 #define MDS_MODE (3)
 #define WINDOW_HEIGHT (750.0)
 #define WINDOW_WIDTH (750.0)
+#define INF (100000)
 //#define DEBUG
 int strategy = 0; //描画モデルの指定
 int click_mode = 0;     //クリックした場合のモード指定
@@ -81,6 +82,9 @@ public:
   vector<Vec2> verosity;
   vector<int> adjacency[MAX_BUF];
   int start_id,target_id;
+  map<int,string> degToVertex;
+  map<string,int> vertexToFrame;
+  int frame_num;
   void InitCoord(Graph g){
     this->start_id = -1;
     this->target_id = -1;
@@ -88,7 +92,23 @@ public:
     pair<vertex_iter,vertex_iter> vp;
     map<int,string>::iterator ite;
     map<string,bool>::iterator is_ite;
+	map<string,int>::iterator deg_ite;
+	int countAS=0; //the number of AS count,and the circle frame number
     srand((unsigned)time(NULL));
+	for(vp = vertices(g) ; vp.first != vp.second ; ++vp.first){
+	  ite = iv.find(*vp.first);
+	  is_ite = isPeer.find((*ite).second);
+	  deg_ite = deg.find((*ite).second);
+	  if(!(*is_ite).second){
+		degToVertex.insert(make_pair((*deg_ite).second,(*deg_ite).first));
+		countAS++;
+	  }
+	}
+	this->frame_num = (countAS/10)+1;
+	map<int,string>::iterator iv_deg = degToVertex.begin();
+	for(unsigned int i = 0 ; i < degToVertex.size() ; i++,iv_deg++){
+	  vertexToFrame.insert(make_pair((*iv_deg).second,frame_num-(i/10)));
+	}
     for(vp = vertices(g) ; vp.first != vp.second ; ++vp.first){
       ite = iv.find(*vp.first);    //得られた頂点のstring名を得る
       is_ite = isPeer.find((*ite).second);  //string名を用いてそれがPeerかどうかを見る
@@ -98,7 +118,11 @@ public:
 		verosity.push_back(make_pair(0.0,0.0));
       }
       else{  //その他はランダム
-		coord.push_back(make_pair(((double)rand()/RAND_MAX)*2.0-1.0,((double)rand()/RAND_MAX)*2.0-1.0));
+		double t = 2.0*M_PI*(double)rand()/RAND_MAX;
+		double interval = 0.75/((double)frame_num+1.0);
+		deg_ite = vertexToFrame.find((*ite).second);
+		double radius = interval*(double)(*deg_ite).second;
+		coord.push_back(make_pair(radius*cos(t),radius*sin(t)));
 		verosity.push_back(make_pair(0.0,0.0));
       }
     }
@@ -107,7 +131,6 @@ public:
       adjacency[source(*ei,g)].push_back(target(*ei,g)); 
       adjacency[target(*ei,g)].push_back(source(*ei,g));
     }
-	
   }
   void MoveEuler(double dt,Vec2 f,int id){
     map<int,string>::iterator ite = iv.find(id);
@@ -120,6 +143,7 @@ public:
   Vec2 GetCentrifugalForce(int id){   //淵に拘束を計算する関数
     map<int,string>::iterator ite = iv.find(id);
     map<string,bool>::iterator is_ite = isPeer.find((*ite).second);
+	map<string,int>::iterator deg_ite;
 	  const double R = 100.0;  //遠心力の係数
 	  if((*is_ite).second){ //Peerだったら
 		double x = coord.at(id).first;
@@ -131,18 +155,16 @@ public:
 		return make_pair(R*(tx-x),R*(ty-y));
     }
 	  else{ //Peerでなかったら
+		deg_ite = this->vertexToFrame.find((*ite).second);  //This point frame number
+		double interval = 0.75/((double)frame_num+1.0);
+		double radius = interval*(double)(*deg_ite).second;
 		double x = coord.at(id).first;
 		double y = coord.at(id).second;
 		double d = x*x + y*y;
 		d = sqrt(d);
-		if(d > 0.6){  //円の外側にあるとき
-		  double tx = (x*0.6)/d;
-		  double ty = (y*0.6)/d;
-		  return make_pair(R*(tx-x),R*(ty-y));
-		}
-		else{    //円の内側にあるとき
-		  return make_pair(0.0,0.0);	
-      }
+		double tx = (x*radius)/d;
+		double ty = (y*radius)/d;
+		return make_pair(R*(tx-x),R*(ty-y));
 	  }
   }
   Vec2 GetSpringForce(int id){
@@ -680,11 +702,15 @@ void displaySwarmID(){
 }
 
 //In Circle mode, drawing restrict circle
-void displayCircleEdge(double radius,double cx,double cy){
-  glColor3d(0.0,0.0,1.0);
-  circle(radius,cx,cy);
-  glColor3d(1.0,1.0,1.0);
-  circle(radius-0.01,cx,cy);
+void displayCircleEdge(){
+  double interval = 0.75/((double)Circle_Cd.frame_num+1.0);
+  for(int i = Circle_Cd.frame_num+1 ; i > 0 ; i--){
+	double radius = interval*((double)i);
+	glColor3d(0.0,0.0,1.0);
+	circle(radius,0.0,0.0);
+	glColor3d(1.0,1.0,1.0);
+	circle(radius-0.01,0.0,0.0);
+  }
 }
 
 void display(){	
@@ -708,7 +734,7 @@ void display(){
   case CIRCLE:
     //drawing in Circle mode
     glClear(GL_COLOR_BUFFER_BIT);
-    displayCircleEdge(0.75,0.0,0.0);
+	displayCircleEdge();
     displayEdge(Circle_Cd.coord,Circle_Cd.adjacency,CdSize);
     displayVertex(Circle_Cd.coord);
     displaySwarmID();
@@ -1150,12 +1176,15 @@ int main(int argc,char *argv[]){
     exit(1);
   }
   int nEdges = lines.size();
+  //initialization of the degree of vertices
+  InitDeg("Swarms/AS_degree_rank.txt");
   //Maping vertex name to int number
   MapInit(vi,iv);
   //new lines using above int number
   LinesInit(vi,glines);
 
   Graph g(glines.begin(),glines.end(),weights.begin(),nNodes);
+
   //initialization of spring model class
   Cd.InitCoord(g);   
   //initialization of circle mode class
