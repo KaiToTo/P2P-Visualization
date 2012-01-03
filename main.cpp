@@ -83,7 +83,7 @@ public:
   vector<int> adjacency[MAX_BUF];
   int start_id,target_id;
   map<int,string> degToVertex;
-  map<string,int> vertexToFrame;
+  map<string,int> vertexToFrame;  //it has the vertex is belong to which frame
   int frame_num;
   void InitCoord(Graph g){
     this->start_id = -1;
@@ -117,7 +117,7 @@ public:
 		coord.push_back(make_pair(0.75*cos(t),0.75*sin(t)));
 		verosity.push_back(make_pair(0.0,0.0));
       }
-      else{  //その他はランダム
+      else{  
 		double t = 2.0*M_PI*(double)rand()/RAND_MAX;
 		double interval = 0.75/((double)frame_num+1.0);
 		deg_ite = vertexToFrame.find((*ite).second);
@@ -139,6 +139,7 @@ public:
     coord.at(id).second += dt*(verosity.at(id).second);
     verosity.at(id).first += dt*(f.first);
     verosity.at(id).second += dt*(f.second);
+	SwapVerteces(id);
   }
   Vec2 GetCentrifugalForce(int id){   //淵に拘束を計算する関数
     map<int,string>::iterator ite = iv.find(id);
@@ -169,7 +170,7 @@ public:
   }
   Vec2 GetSpringForce(int id){
     const double k = 0.01;
-    const double l = 0.0001;
+    const double l = 0.00001;
     double fx=0,fy=0;
     for(unsigned int i = 0 ; i < adjacency[id].size() ; ++i){
       double dx = coord.at(id).first - coord.at(adjacency[id].at(i)).first;
@@ -185,7 +186,7 @@ public:
     return make_pair(fx,fy);
   }
   Vec2 GetReplusiveForce(int id){
-    const double g = 0.01;
+    const double g = 0.0005;
     double fx=0,fy=0;
     for(unsigned int i = 0 ; i < coord.size() ; i++){
       if(i != id){
@@ -202,12 +203,52 @@ public:
     return make_pair(fx,fy);
   }
   Vec2 GetFrictionForce(int id){
-    const double m = 30.0;
+    const double m = 5.0;
     double vx = verosity.at(id).first;
     double vy = verosity.at(id).second;
     return make_pair(-m*vx,-m*vy);
   }
-  
+  bool isNear(int v1,int v2){
+	double x1 = coord.at(v1).first;
+	double y1 = coord.at(v1).second;
+	double x2 = coord.at(v2).first;
+	double y2 = coord.at(v2).second;
+	double d = (x1-x2)*(x1-x2)+(y1-y2)*(y1-y2);
+	d = sqrt(d);
+	if(d < 0.12){
+	  return true;
+	}
+	else{
+	  return false;
+	}
+  }
+  void swapPair(int v1,int v2){
+	double temp_x = coord.at(v1).first;
+	double temp_y = coord.at(v1).second;
+	coord.at(v1).first = coord.at(v2).first;
+	coord.at(v1).second = coord.at(v2).second;
+	coord.at(v2).first = temp_x;
+	coord.at(v2).second = temp_y;
+	temp_x = verosity.at(v1).first;
+	temp_y = verosity.at(v1).second;
+	verosity.at(v1).first = verosity.at(v2).first;
+	verosity.at(v1).second = verosity.at(v2).second;
+	verosity.at(v2).first = temp_x;
+	verosity.at(v2).second = temp_y;
+  }
+  void SwapVerteces(int id){
+	map<int,string>::iterator ite = iv.find(id);
+	map<string,int>::iterator deg_ite = vertexToFrame.find((*ite).second);
+	int thisFrame = (*deg_ite).second;
+	for(unsigned int i = 0 ; i < coord.size() ; i++){
+	  ite = iv.find(i);
+	  deg_ite = vertexToFrame.find((*ite).second);
+	  int thatFrame = (*deg_ite).second;
+	  if((thisFrame == thatFrame) && i != id && isNear(id,i)){
+		swapPair(id,i);
+	  }
+	}
+  }
   void MoveAll(){
     Vec2 spring_force,replusive_force,friction_force,centrifugal_force,f;
     for(unsigned int i = 0 ; i < coord.size() ; i++){
