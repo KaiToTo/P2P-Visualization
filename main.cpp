@@ -648,7 +648,13 @@ namespace metric{
 
 //drawing verteces
 void displayVertex(vector<Vec2> cor){
-  vector<int> cour;
+  vector<int> route;
+  if(strategy == 0){
+	route = course(Cd.start_id,Cd.target_id);
+  }
+  else if(strategy == 2){
+	route = course(Circle_Cd.start_id,Circle_Cd.target_id);
+  }
   for(unsigned int i = 0 ; i < cor.size() ; i++){
     map<int,string>::iterator ite = iv.find(i);
     map<string,bool>::iterator is_ite = isPeer.find((*ite).second);
@@ -665,7 +671,12 @@ void displayVertex(vector<Vec2> cor){
       }
     }
     else{
-      glColor3d(1.0,0.0,1.0);  //in case this is AS, color is pink
+	  if(is_course(i,route)){
+		glColor3d(1.0,1.0,0.0);
+	  }
+	  else{
+		glColor3d(1.0,0.0,1.0);  //in case this is AS, color is pink
+	  }
     }
 	double vx,vy;
 	if(strategy == 1){

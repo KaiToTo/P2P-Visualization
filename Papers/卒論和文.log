@@ -1,0 +1,111 @@
+This is pTeX, Version 3.141592-p3.1.10 (utf8) (Web2C 7.5.4) (format=platex-euc 2006.11.11)  9 JAN 2012 16:40
+**繃^8d^^92茫^^96繃^92^^8c聢^96^^87.tex
+(./繃^8d^^92茫^^96繃^92^^8c聢^96^^87.tex
+pLaTeX2e <2006/01/04>+0 (based on LaTeX2e <2005/12/01> patch level 0)
+(/usr/local/teTeX/share/texmf/ptex/platex/jsclasses/jsarticle.cls
+Document Class: jsarticle 2006/11/01 okumura
+LaTeX Info: Redefining \rmfamily on input line 319.
+LaTeX Info: Redefining \sffamily on input line 322.
+LaTeX Info: Redefining \ttfamily on input line 325.
+\symmincho=\mathgroup4
+LaTeX Font Info:    Overwriting symbol font `mincho' in version `bold'
+(Font)                  JY1/mc/m/n --> JY1/gt/m/n on input line 390.
+LaTeX Font Info:    Font shape `JT1/mc/m/n' will be
+(Font)              scaled to size 9.60999pt on input line 582.
+LaTeX Font Info:    Font shape `JY1/mc/m/n' will be
+(Font)              scaled to size 9.60999pt on input line 582.
+\fullwidth=\dimen118
+LaTeX Font Info:    Font shape `JT1/mc/m/n' will be
+(Font)              scaled to size 7.68799pt on input line 729.
+LaTeX Font Info:    Font shape `JY1/mc/m/n' will be
+(Font)              scaled to size 7.68799pt on input line 729.
+\c@part=\count81
+\c@section=\count82
+\c@subsection=\count83
+\c@subsubsection=\count84
+\c@paragraph=\count85
+\c@subparagraph=\count86
+\@abstractbox=\box41
+\c@figure=\count87
+\c@table=\count88
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\@lnumwidth=\dimen119
+\bibindent=\dimen120
+LaTeX Info: Redefining \TeX on input line 1682.
+LaTeX Info: Redefining \LaTeX on input line 1708.
+LaTeX Info: Redefining \LaTeXe on input line 1733.
+\heisei=\count89
+) (./繃^8d^^92茫^^96繃^92^^8c聢^96^^87.aux)
+\openout1 = `繃^8d^^92茫^^96繃^92^^8c聢^96^^87.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for JY1/mc/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for JT1/mc/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Font shape `JT1/mc/m/n' will be
+(Font)              scaled to size 23.90964pt on input line 7.
+LaTeX Font Info:    Font shape `JY1/mc/m/n' will be
+(Font)              scaled to size 23.90964pt on input line 7.
+LaTeX Font Info:    Font shape `JT1/mc/m/n' will be
+(Font)              scaled to size 13.83836pt on input line 8.
+LaTeX Font Info:    Font shape `JY1/mc/m/n' will be
+(Font)              scaled to size 13.83836pt on input line 8.
+LaTeX Font Info:    Font shape `JT1/gt/m/n' will be
+(Font)              scaled to size 13.83836pt on input line 8.
+LaTeX Font Info:    Font shape `JY1/gt/m/n' will be
+(Font)              scaled to size 13.83836pt on input line 8.
+LaTeX Font Info:    Font shape `JT1/mc/m/n' will be
+(Font)              scaled to size 11.53198pt on input line 11.
+LaTeX Font Info:    Font shape `JY1/mc/m/n' will be
+(Font)              scaled to size 11.53198pt on input line 11.
+LaTeX Font Info:    Font shape `JT1/gt/m/n' will be
+(Font)              scaled to size 11.53198pt on input line 11.
+LaTeX Font Info:    Font shape `JY1/gt/m/n' will be
+(Font)              scaled to size 11.53198pt on input line 11.
+ [1
+
+]
+LaTeX Font Info:    Font shape `JT1/gt/m/n' will be
+(Font)              scaled to size 9.60999pt on input line 21.
+LaTeX Font Info:    Font shape `JY1/gt/m/n' will be
+(Font)              scaled to size 9.60999pt on input line 21.
+ [2]
+Underfull \hbox (badness 1281) in paragraph at lines 30--34
+\OT1/cmr/m/n/10 in-ter-net is sig-nals that is en-coded in bi-nary
+ []
+
+
+Underfull \hbox (badness 2111) in paragraph at lines 30--34
+[] \OT1/cmr/m/n/10 How-ever, the in-ter-net net-work is gen-er-ally
+ []
+
+[3
+
+] [4
+
+] [5
+
+] (./繃^8d^^92茫^^96繃^92^^8c聢^96^^87.aux) ) 
+Here is how much of TeX's memory you used:
+ 388 strings out of 94677
+ 3952 string characters out of 1176846
+ 56627 words of memory out of 1000000
+ 3757 multiletter control sequences out of 10000+50000
+ 11872 words of font info for 54 fonts, out of 500000 for 2000
+ 571 hyphenation exceptions out of 1000
+ 23i,4n,21p,1158b,246s stack positions out of 1500i,500n,5000p,200000b,5000s
+
+Output written on 繃^8d^^92茫^^96繃^92^^8c聢^96^^87.dvi (5 pages, 9432 bytes).

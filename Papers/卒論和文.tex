@@ -1,0 +1,52 @@
+\documentclass{jsarticle}
+
+\title{Draft in Japanese}
+
+\begin{document}
+
+\begin{center}{\Huge Table Of Contents}\end{center}
+\section{Abstract}
+submitted
+\section{Introduction}
+\subsection{Background}
+インターネット上のデータの流れを理解する上でネットワークビジュアリゼーションは必要不可欠な分野である。インターネットは現在においても様々な課題を抱えている。これらの課題を解決するためにも、ネットワーク上のデータを可視化することが必要である。我々はP2Pネットワークの一つであるBitTorrentを用いてそのデータトラフィックを可視化し、ネットワーク上の特徴、問題点を捉えるための研究を行った。
+\subsection{Related Works}
+\subsection{Scale-free network}
+P2Pネットワークは一般にスケールフリーなネットワークとして知られている。このことはWWW上にある多くのネットワークにも同じことがあてはまる。スケールフリーとは各ノードの次数が指数関数的なオーダーで増減するようなネットワークのことを言う。\cite{scale-free} このネットワークの特徴は各ノードでの次数的な特徴に偏りがあることがあげられる。これはノード同士で階層構造が作られていることを意味する。スケールフリーなネットワークではハブと呼ばれる次数の大きいノードが存在することが多く、ネットワーク上ではこのノードの重要性は高まることになる。そのためスケールフリーなネットワークはその構造を解析することが一般的なグラフよりも難しくなる。これは各ノードの次数、つまり各ノードから出ているエッジの数に大きな方よりが生じるためである。
+\section{Methods}
+\subsection{Measurement of traffic data}
+本論文ではP2Pネットワークのトラフィックデータをとる対象としてBitTorrentを使用した。コアハブを用いてP2Pの各Swarmを流れるデータを計測する。(1)まず、このSwarmに参加しているPeerのIPアドレスとポート番号の組が得られる。(2)これらのIPアドレスをCAIDAのデータベースを用いて測定日に合わせてAS番号に変換していく。(3)BGPテーブルというAS間の接続関係をまとめたデータを、これも測定日に合わせて取得しておく。(4)BGPテーブルから各AS間の最短経路をDijkstraのアルゴリズムなどで求めておく。(5)このデータは大きいため(4)からSwarmに実際参加しているPeerのASのみを抜き出してファイルデータとする。しかし、BitTorrentのようなP2PネットワークはファイアウォールやNATを持つため到達不可能ノードが存在する。このノードの存在はより一般的、普遍的なデータを取る上で障害となってしまう。そこで今回の計測では以下のような手法を用いている。\cite{BitTorrent}Trackerという管理サーバを用いて測定用のマシンのIPアドレスを教える。これにより到達不可能ノードからP2Pを通して測定用サーバの方にアクセスがくる。ここで到達不可能ノードからもデータを得ることができる。最終的に得られたデータは各SwarmのPeerとPeerの経由点を含めた経路情報が得られることになる。これをグラフとして可視化する。
+\subsection{Visualization models}
+この可視化に際して用いたモデルは以下の３種類である。
+\subsubsection{Spring Model}
+
+\section{Results}
+In this research, main purpose is to analyze traffic amount of each node, and edge.
+\section{Further Developments}
+We constructed this visualization on two-dimensional space. If we do it on three-dimensional space, it will become easier to analyze the hierarchy of graph nodes.
+\section{References}
+\twocolumn
+\section{Introduction}
+In the field of internet network visualization, the main purpose is to help people understand the structure of network and to provide any informations that is useful for an improvement. Generally, the data that is transferred in the internet is signals that is encoded in binary numbers. Information about a terminal which receive and send data is also encoded. Therefore, we cannot understand these information easily. It is necessary to provide information about node to node connections, data transportations.\\
+\ However, the internet network is generally thought of scale-free network. Scale-free network is 
+a network whose degree distribution follows a power low. \cite{scale-free} The graphs that belong to this type is difficult to analyze. \\
+\ We suggest the method of analyzing this scale-free networks. 
+\newpage
+\section{イントロダクション}
+ネットワークビジュアリゼーションの分野では人々がそのネットワークの構造を理解し、改善のための有用な情報を提供することが主な目的となる。インターネットには解決されるべき多くの課題がある。
+
+\twocolumn
+\newpage
+\section{Methods}
+\subsection{Measurement of traffic data}
+In this research, we made use of the data of BitTorrent. The methods are  \cite{BitTorrent}. The process of this measurement is below. (1)We got the pair of IP address and port numbers which nodes that participates in each swarms have. (2)Then we converted IP addresses to AS numbers by using CAIDA database of the measurement day. (3)And we got BGP tables of the measurement day that include information about the connections of each ASs. (4)From these BGP tables, we calculated the shortest paths between each ASs by using dijkstra algorithm.(5)Because this data are too big, we selected peers that participated in swarms actually and made data files. However, in BitTorrent network, there are many unreachable peers because of firewall or NAT. To solve this problem, this method used tracker servers that told each peers the IP address of itself. Therefore, each peers can access tracker servers by itself. And we could get the data from these unreachable peers.
+\newpage
+\section{メソッド}
+\newpage
+
+\onecolumn
+\begin{thebibliography}{9}
+\bibitem{scale-free} "Networks of Scientific Papers" , Derek J. de Solla Price
+\bibitem{BitTorrent} "Measuring BitTorrent Swarms Beyond Reach" , Masahiro Yoshida, Akihiro Nakao
+\end{thebibliography}
+\end{document}
