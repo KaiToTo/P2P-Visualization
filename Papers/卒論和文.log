@@ -1,4 +1,4 @@
-This is pTeX, Version 3.141592-p3.1.10 (utf8) (Web2C 7.5.4) (format=platex-euc 2006.11.11)  9 JAN 2012 16:40
+This is pTeX, Version 3.141592-p3.1.10 (utf8) (Web2C 7.5.4) (format=platex-euc 2006.11.11)  10 JAN 2012 12:25
 **繃^8d^^92茫^^96繃^92^^8c聢^96^^87.tex
 (./繃^8d^^92茫^^96繃^92^^8c聢^96^^87.tex
 pLaTeX2e <2006/01/04>+0 (based on LaTeX2e <2005/12/01> patch level 0)
@@ -102,10 +102,11 @@ Underfull \hbox (badness 2111) in paragraph at lines 30--34
 Here is how much of TeX's memory you used:
  388 strings out of 94677
  3952 string characters out of 1176846
- 56627 words of memory out of 1000000
+ 57627 words of memory out of 1000000
  3757 multiletter control sequences out of 10000+50000
  11872 words of font info for 54 fonts, out of 500000 for 2000
  571 hyphenation exceptions out of 1000
  23i,4n,21p,1158b,246s stack positions out of 1500i,500n,5000p,200000b,5000s
 
-Output written on 繃^8d^^92茫^^96繃^92^^8c聢^96^^87.dvi (5 pages, 9432 bytes).
+Output written on 繃^8d^^92茫^^96繃^92^^8c聢^96^^87.dvi (5 pages, 10172 bytes).
+
