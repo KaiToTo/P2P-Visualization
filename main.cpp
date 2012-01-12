@@ -16,6 +16,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
+#include <boost/graph/visitors.hpp>
 #include "stdafx.h"
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
@@ -37,6 +38,7 @@ typedef pair<int,int> gEdges;	//stringの辺をintにマップして格納する
 typedef map<int,string> IntToVertex;  //頂点のインデクスから頂点の名前へのマップ
 typedef map<string,int> VertexToInt;  //頂点の名前から対応するインデクスへのマップ
 typedef map<string,int> VertexToDegree; //頂点名からdegreeを得るマップ
+typedef map< pair<int,int>, vector<int> > Route;  //It has a route that was maped vertex index
 
 vector<Edge> lines;   //辺を格納(Graph用)
 vector<int> weights;  //辺の重み
@@ -47,6 +49,7 @@ IntToVertex iv;
 VertexToDegree deg;  //各頂点のdegreeを格納するマップ
 vector<gEdges> glines;//辺を格納(表示用)
 map<pair<string,string>,string > way;  //it has route 
+Route route_way;
 
 
 
@@ -92,38 +95,38 @@ public:
     pair<vertex_iter,vertex_iter> vp;
     map<int,string>::iterator ite;
     map<string,bool>::iterator is_ite;
-	map<string,int>::iterator deg_ite;
-	int countAS=0; //the number of AS count,and the circle frame number
+    map<string,int>::iterator deg_ite;
+    int countAS=0; //the number of AS count,and the circle frame number
     srand((unsigned)time(NULL));
-	for(vp = vertices(g) ; vp.first != vp.second ; ++vp.first){
-	  ite = iv.find(*vp.first);
-	  is_ite = isPeer.find((*ite).second);
-	  deg_ite = deg.find((*ite).second);
-	  if(!(*is_ite).second){
-		degToVertex.insert(make_pair((*deg_ite).second,(*deg_ite).first));
-		countAS++;
-	  }
-	}
-	this->frame_num = (countAS/10)+1;
-	map<int,string>::iterator iv_deg = degToVertex.begin();
-	for(unsigned int i = 0 ; i < degToVertex.size() ; i++,iv_deg++){
-	  vertexToFrame.insert(make_pair((*iv_deg).second,frame_num-(i/10)));
-	}
+    for(vp = vertices(g) ; vp.first != vp.second ; ++vp.first){
+      ite = iv.find(*vp.first);
+      is_ite = isPeer.find((*ite).second);
+      deg_ite = deg.find((*ite).second);
+      if(!(*is_ite).second){
+	degToVertex.insert(make_pair((*deg_ite).second,(*deg_ite).first));
+	countAS++;
+      }
+    }
+    this->frame_num = (countAS/10)+1;
+    map<int,string>::iterator iv_deg = degToVertex.begin();
+    for(unsigned int i = 0 ; i < degToVertex.size() ; i++,iv_deg++){
+      vertexToFrame.insert(make_pair((*iv_deg).second,frame_num-(i/10)));
+    }
     for(vp = vertices(g) ; vp.first != vp.second ; ++vp.first){
       ite = iv.find(*vp.first);    //得られた頂点のstring名を得る
       is_ite = isPeer.find((*ite).second);  //string名を用いてそれがPeerかどうかを見る
       if((*is_ite).second){  //Peerだった場合円周上に配置
-		double t = 2.0*M_PI*(double)rand()/RAND_MAX;
-		coord.push_back(make_pair(0.75*cos(t),0.75*sin(t)));
-		verosity.push_back(make_pair(0.0,0.0));
+	double t = 2.0*M_PI*(double)rand()/RAND_MAX;
+	coord.push_back(make_pair(0.75*cos(t),0.75*sin(t)));
+	verosity.push_back(make_pair(0.0,0.0));
       }
       else{  
-		double t = 2.0*M_PI*(double)rand()/RAND_MAX;
-		double interval = 0.75/((double)frame_num+1.0);
-		deg_ite = vertexToFrame.find((*ite).second);
-		double radius = interval*(double)(*deg_ite).second;
-		coord.push_back(make_pair(radius*cos(t),radius*sin(t)));
-		verosity.push_back(make_pair(0.0,0.0));
+	double t = 2.0*M_PI*(double)rand()/RAND_MAX;
+	double interval = 0.75/((double)frame_num+1.0);
+	deg_ite = vertexToFrame.find((*ite).second);
+	double radius = interval*(double)(*deg_ite).second;
+	coord.push_back(make_pair(radius*cos(t),radius*sin(t)));
+	verosity.push_back(make_pair(0.0,0.0));
       }
     }
     graph_traits<Graph>::edge_iterator ei,ei_end;
@@ -139,34 +142,34 @@ public:
     coord.at(id).second += dt*(verosity.at(id).second);
     verosity.at(id).first += dt*(f.first);
     verosity.at(id).second += dt*(f.second);
-	SwapVerteces(id);
+    SwapVerteces(id);
   }
   Vec2 GetCentrifugalForce(int id){   //淵に拘束を計算する関数
     map<int,string>::iterator ite = iv.find(id);
     map<string,bool>::iterator is_ite = isPeer.find((*ite).second);
 	map<string,int>::iterator deg_ite;
-	  const double R = 100.0;  //遠心力の係数
-	  if((*is_ite).second){ //Peerだったら
-		double x = coord.at(id).first;
-		double y = coord.at(id).second;
-		double d = x*x + y*y;
-		d = sqrt(d);  //中心からの距離
-		double tx = (x*0.75)/d;
-		double ty = (y*0.75)/d;
-		return make_pair(R*(tx-x),R*(ty-y));
-    }
-	  else{ //Peerでなかったら
-		deg_ite = this->vertexToFrame.find((*ite).second);  //This point frame number
-		double interval = 0.75/((double)frame_num+1.0);
-		double radius = interval*(double)(*deg_ite).second;
-		double x = coord.at(id).first;
-		double y = coord.at(id).second;
-		double d = x*x + y*y;
-		d = sqrt(d);
-		double tx = (x*radius)/d;
-		double ty = (y*radius)/d;
-		return make_pair(R*(tx-x),R*(ty-y));
-	  }
+	const double R = 100.0;  //遠心力の係数
+	if((*is_ite).second){ //Peerだったら
+	  double x = coord.at(id).first;
+	  double y = coord.at(id).second;
+	  double d = x*x + y*y;
+	  d = sqrt(d);  //中心からの距離
+	  double tx = (x*0.75)/d;
+	  double ty = (y*0.75)/d;
+	  return make_pair(R*(tx-x),R*(ty-y));
+	}
+	else{ //Peerでなかったら
+	  deg_ite = this->vertexToFrame.find((*ite).second);  //This point frame number
+	  double interval = 0.75/((double)frame_num+1.0);
+	  double radius = interval*(double)(*deg_ite).second;
+	  double x = coord.at(id).first;
+	  double y = coord.at(id).second;
+	  double d = x*x + y*y;
+	  d = sqrt(d);
+	  double tx = (x*radius)/d;
+	  double ty = (y*radius)/d;
+	  return make_pair(R*(tx-x),R*(ty-y));
+	}
   }
   Vec2 GetSpringForce(int id){
     const double k = 0.01;
@@ -295,6 +298,7 @@ public:
       ite = iv.find(*vp.first);
       coord.push_back(make_pair(((double)rand()/RAND_MAX)*2.0-1.0,((double)rand()/RAND_MAX)*2.0-1.0));
       verosity.push_back(make_pair(0.0,0.0));
+
     }
     graph_traits<Graph>::edge_iterator ei,ei_end;
     for(tie(ei,ei_end) = edges(g) ; ei != ei_end ; ++ei){
@@ -519,6 +523,33 @@ void drawString(const char *str,double x, double y,int size){
   }
 }
 
+vector<int> SearchRoute(vector<int> p,int start,int goal){
+    vector<int> route;
+    int prev=goal;
+    while(prev != start){
+      route.push_back(prev);
+      prev = p[prev];
+    }
+    route.push_back(prev);
+    reverse(route.begin(),route.end());
+    return route;
+}
+
+void InitRouteMap(Graph g){
+  typedef graph_traits<Graph>::vertex_iterator vertex_iter;
+  pair<vertex_iter,vertex_iter> vp;
+  vector<int> p(num_vertices(g));
+  for(vp = vertices(g) ; vp.first != vp.second ; ++vp.first){
+    dijkstra_shortest_paths( g, *vp.first,
+			     visitor( make_dijkstra_visitor (
+							     record_predecessors( &p[0], on_edge_relaxed() )
+							     )));
+    for(int i = 0 ; i < num_vertices(g) ; i++){
+      route_way.insert(make_pair(make_pair(*vp.first,i),SearchRoute(p,*vp.first,i)));
+    }
+  }
+}
+
 //returning the course
 vector<int> course(int s,int t){
   vector<int> cour;
@@ -526,6 +557,7 @@ vector<int> course(int s,int t){
 	cour.push_back(-1);
 	return cour;
   }
+  /*
   map<int,string>::iterator iv_ite_s = iv.find(s);
   map<int,string>::iterator iv_ite_t = iv.find(t);
   map<string,int>::iterator vi_ite;
@@ -542,6 +574,9 @@ vector<int> course(int s,int t){
     start = edge_result[0].second;
   }
   return cour;
+  */
+  Route::iterator iter = route_way.find(make_pair(s,t));
+  return (*iter).second;
 }
 
 bool is_course(int v,vector<int> cour){
@@ -1247,6 +1282,8 @@ int main(int argc,char *argv[]){
   InitAdj(g,adj,nNodes);  
   //create spectral model using adjacency list
   Spectral(adj,nNodes);   
+  //create shortest paths of each vertices
+  InitRouteMap(g);
 
   dist = gsl_matrix_alloc( nNodes, nNodes );  
    // Initialize the distance metrix
@@ -1254,7 +1291,7 @@ int main(int argc,char *argv[]){
    // gsl_matrix_fprintf( stdout, dist, "%f" );
    // Analysis with Multi-dimensional Scaling
   MDS( dist, nNodes );
-	
+  
   glutInit(&argc,argv);
   glutInitWindowSize(WINDOW_WIDTH,WINDOW_HEIGHT);
   glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);

@@ -92,45 +92,45 @@ public:
     pair<vertex_iter,vertex_iter> vp;
     map<int,string>::iterator ite;
     map<string,bool>::iterator is_ite;
-	map<string,int>::iterator deg_ite;
-	int countAS=0; //the number of AS count,and the circle frame number
+    map<string,int>::iterator deg_ite;
+    int countAS=0; //the number of AS count,and the circle frame number
     srand((unsigned)time(NULL));
-	for(vp = vertices(g) ; vp.first != vp.second ; ++vp.first){
-	  ite = iv.find(*vp.first);
-	  is_ite = isPeer.find((*ite).second);
-	  deg_ite = deg.find((*ite).second);
-	  if(!(*is_ite).second){
-		degToVertex.insert(make_pair((*deg_ite).second,(*deg_ite).first));
-		countAS++;
-	  }
-	}
-	this->frame_num = (countAS/10)+1;
-	map<int,string>::iterator iv_deg = degToVertex.begin();
+    for(vp = vertices(g) ; vp.first != vp.second ; ++vp.first){
+      ite = iv.find(*vp.first);
+      is_ite = isPeer.find((*ite).second);
+      deg_ite = deg.find((*ite).second);
+      if(!(*is_ite).second){
+	degToVertex.insert(make_pair((*deg_ite).second,(*deg_ite).first));
+	countAS++;
+      }
+    }
+    this->frame_num = (countAS/10)+1;
+    map<int,string>::iterator iv_deg = degToVertex.begin();
 	for(unsigned int i = 0 ; i < degToVertex.size() ; i++,iv_deg++){
 	  vertexToFrame.insert(make_pair((*iv_deg).second,frame_num-(i/10)));
 	}
-    for(vp = vertices(g) ; vp.first != vp.second ; ++vp.first){
-      ite = iv.find(*vp.first);    //得られた頂点のstring名を得る
-      is_ite = isPeer.find((*ite).second);  //string名を用いてそれがPeerかどうかを見る
-      if((*is_ite).second){  //Peerだった場合円周上に配置
-		double t = 2.0*M_PI*(double)rand()/RAND_MAX;
-		coord.push_back(make_pair(0.75*cos(t),0.75*sin(t)));
-		verosity.push_back(make_pair(0.0,0.0));
-      }
-      else{  
-		double t = 2.0*M_PI*(double)rand()/RAND_MAX;
-		double interval = 0.75/((double)frame_num+1.0);
-		deg_ite = vertexToFrame.find((*ite).second);
-		double radius = interval*(double)(*deg_ite).second;
-		coord.push_back(make_pair(radius*cos(t),radius*sin(t)));
-		verosity.push_back(make_pair(0.0,0.0));
-      }
-    }
-    graph_traits<Graph>::edge_iterator ei,ei_end;
-    for(tie(ei,ei_end) = edges(g) ; ei != ei_end ; ++ei){
-      adjacency[source(*ei,g)].push_back(target(*ei,g)); 
-      adjacency[target(*ei,g)].push_back(source(*ei,g));
-    }
+	for(vp = vertices(g) ; vp.first != vp.second ; ++vp.first){
+	  ite = iv.find(*vp.first);    //得られた頂点のstring名を得る
+	  is_ite = isPeer.find((*ite).second);  //string名を用いてそれがPeerかどうかを見る
+	  if((*is_ite).second){  //Peerだった場合円周上に配置
+	    double t = 2.0*M_PI*(double)rand()/RAND_MAX;
+	    coord.push_back(make_pair(0.75*cos(t),0.75*sin(t)));
+	    verosity.push_back(make_pair(0.0,0.0));
+	  }
+	  else{  
+	    double t = 2.0*M_PI*(double)rand()/RAND_MAX;
+	    double interval = 0.75/((double)frame_num+1.0);
+	    deg_ite = vertexToFrame.find((*ite).second);
+	    double radius = interval*(double)(*deg_ite).second;
+	    coord.push_back(make_pair(radius*cos(t),radius*sin(t)));
+	    verosity.push_back(make_pair(0.0,0.0));
+	  }
+	}
+	graph_traits<Graph>::edge_iterator ei,ei_end;
+	for(tie(ei,ei_end) = edges(g) ; ei != ei_end ; ++ei){
+	  adjacency[source(*ei,g)].push_back(target(*ei,g)); 
+	  adjacency[target(*ei,g)].push_back(source(*ei,g));
+	}
   }
   void MoveEuler(double dt,Vec2 f,int id){
     map<int,string>::iterator ite = iv.find(id);
@@ -139,34 +139,34 @@ public:
     coord.at(id).second += dt*(verosity.at(id).second);
     verosity.at(id).first += dt*(f.first);
     verosity.at(id).second += dt*(f.second);
-	SwapVerteces(id);
+    SwapVerteces(id);
   }
   Vec2 GetCentrifugalForce(int id){   //淵に拘束を計算する関数
     map<int,string>::iterator ite = iv.find(id);
     map<string,bool>::iterator is_ite = isPeer.find((*ite).second);
 	map<string,int>::iterator deg_ite;
-	  const double R = 100.0;  //遠心力の係数
-	  if((*is_ite).second){ //Peerだったら
-		double x = coord.at(id).first;
-		double y = coord.at(id).second;
-		double d = x*x + y*y;
-		d = sqrt(d);  //中心からの距離
-		double tx = (x*0.75)/d;
-		double ty = (y*0.75)/d;
-		return make_pair(R*(tx-x),R*(ty-y));
-    }
-	  else{ //Peerでなかったら
-		deg_ite = this->vertexToFrame.find((*ite).second);  //This point frame number
-		double interval = 0.75/((double)frame_num+1.0);
-		double radius = interval*(double)(*deg_ite).second;
-		double x = coord.at(id).first;
-		double y = coord.at(id).second;
-		double d = x*x + y*y;
-		d = sqrt(d);
-		double tx = (x*radius)/d;
-		double ty = (y*radius)/d;
-		return make_pair(R*(tx-x),R*(ty-y));
-	  }
+	const double R = 100.0;  //遠心力の係数
+	if((*is_ite).second){ //Peerだったら
+	  double x = coord.at(id).first;
+	  double y = coord.at(id).second;
+	  double d = x*x + y*y;
+	  d = sqrt(d);  //中心からの距離
+	  double tx = (x*0.75)/d;
+	  double ty = (y*0.75)/d;
+	  return make_pair(R*(tx-x),R*(ty-y));
+	}
+	else{ //Peerでなかったら
+	  deg_ite = this->vertexToFrame.find((*ite).second);  //This point frame number
+	  double interval = 0.75/((double)frame_num+1.0);
+	  double radius = interval*(double)(*deg_ite).second;
+	  double x = coord.at(id).first;
+	  double y = coord.at(id).second;
+	  double d = x*x + y*y;
+	  d = sqrt(d);
+	  double tx = (x*radius)/d;
+	  double ty = (y*radius)/d;
+	  return make_pair(R*(tx-x),R*(ty-y));
+	}
   }
   Vec2 GetSpringForce(int id){
     const double k = 0.01;
@@ -648,7 +648,13 @@ namespace metric{
 
 //drawing verteces
 void displayVertex(vector<Vec2> cor){
-  vector<int> cour;
+  vector<int> route;
+  if(strategy == 0){
+	route = course(Cd.start_id,Cd.target_id);
+  }
+  else if(strategy == 2){
+	route = course(Circle_Cd.start_id,Circle_Cd.target_id);
+  }
   for(unsigned int i = 0 ; i < cor.size() ; i++){
     map<int,string>::iterator ite = iv.find(i);
     map<string,bool>::iterator is_ite = isPeer.find((*ite).second);
@@ -665,7 +671,12 @@ void displayVertex(vector<Vec2> cor){
       }
     }
     else{
-      glColor3d(1.0,0.0,1.0);  //in case this is AS, color is pink
+	  if(is_course(i,route)){
+		glColor3d(1.0,1.0,0.0);
+	  }
+	  else{
+		glColor3d(1.0,0.0,1.0);  //in case this is AS, color is pink
+	  }
     }
 	double vx,vy;
 	if(strategy == 1){
