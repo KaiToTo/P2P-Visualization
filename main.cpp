@@ -173,7 +173,7 @@ public:
   }
   Vec2 GetSpringForce(int id){
     const double k = 0.01;
-    const double l = 0.00001;
+    const double l = 0.00000001;
     double fx=0,fy=0;
     for(unsigned int i = 0 ; i < adjacency[id].size() ; ++i){
       double dx = coord.at(id).first - coord.at(adjacency[id].at(i)).first;
@@ -189,7 +189,7 @@ public:
     return make_pair(fx,fy);
   }
   Vec2 GetReplusiveForce(int id){
-    const double g = 0.0005;
+    const double g = 0.01;
     double fx=0,fy=0;
     for(unsigned int i = 0 ; i < coord.size() ; i++){
       if(i != id){
@@ -206,7 +206,7 @@ public:
     return make_pair(fx,fy);
   }
   Vec2 GetFrictionForce(int id){
-    const double m = 5.0;
+    const double m = 7.0;
     double vx = verosity.at(id).first;
     double vy = verosity.at(id).second;
     return make_pair(-m*vx,-m*vy);
@@ -314,7 +314,7 @@ public:
   }
   Vec2 GetSpringForce(int id){
     const double k = 0.1;
-    const double l = 0.0001;
+    const double l = 0.00000001;
     double fx=0,fy=0;
     for(unsigned int i = 0 ; i < adjacency[id].size() ; ++i){
       double dx = coord.at(id).first - coord.at(adjacency[id].at(i)).first;
@@ -347,7 +347,7 @@ public:
     return make_pair(fx,fy);
   }
   Vec2 GetFrictionForce(int id){
-    const double m = 30.0;
+    const double m = 7.0;
     double vx = verosity.at(id).first;
     double vy = verosity.at(id).second;
     return make_pair(-m*vx,-m*vy);
@@ -698,19 +698,19 @@ void displayVertex(vector<Vec2> cor){
       //if clicked, color is yellow
       if((i == Cd.start_id || i == Cd.target_id || i == Circle_Cd.start_id || i == Circle_Cd.target_id)
 		 && (strategy == 0 || strategy == 2)){ 
-		glColor3d(1.0,1.0,0.0);
+		glColor3d(0.0,1.0,0.0);
       }
       else{
         //not clicked, color is green
-		glColor3d(0.0,1.0,0.0);
+	glColor3d(0.7,0.5,0.1);
       }
     }
     else{
 	  if(is_course(i,route)){
-		glColor3d(1.0,1.0,0.0);
+	    glColor3d(0.0,1.0,0.0);
 	  }
 	  else{
-		glColor3d(1.0,0.0,1.0);  //in case this is AS, color is pink
+	    glColor3d(0.3,0.4,0.9);  //in case this is AS, color is pink
 	  }
     }
 	double vx,vy;
@@ -749,11 +749,11 @@ void displayEdge(vector<Vec2> cor,vector<int> adj[],int size){
   }else if(strategy == 2){
 	route = course(Circle_Cd.start_id,Circle_Cd.target_id);
   }
-  if(route.at(0) >= 0){ //if the route is not void
+  if(route.at(0) >= 0){ //if the route is not void, the edges is hilight color
 	for(unsigned int i = 0 ; i < route.size()-1 ; i++){
 	  int start = route.at(i);
 	  int target = route.at(i+1);
-	  glColor3d(1.0,1.0,0.0);
+	  glColor3d(0.0,1.0,0.0);
 	  glBegin(GL_LINES);
 	  glVertex2d(cor.at(start).first,cor.at(start).second);
 	  glVertex2d(cor.at(target).first,cor.at(target).second);
@@ -793,7 +793,7 @@ void displayCircleEdge(){
   double interval = 0.75/((double)Circle_Cd.frame_num+1.0);
   for(int i = Circle_Cd.frame_num+1 ; i > 0 ; i--){
 	double radius = interval*((double)i);
-	glColor3d(0.0,0.0,1.0);
+	glColor3d(0.9,0.9,0.9);
 	circle(radius,0.0,0.0);
 	glColor3d(1.0,1.0,1.0);
 	circle(radius-0.01,0.0,0.0);
